@@ -1,12 +1,622 @@
 --[[
- .____                  ________ ___.    _____                           __                
- |    |    __ _______   \_____  \\_ |___/ ____\_ __  ______ ____ _____ _/  |_  ___________ 
- |    |   |  |  \__  \   /   |   \| __ \   __\  |  \/  ___// ___\\__  \\   __\/  _ \_  __ \
- |    |___|  |  // __ \_/    |    \ \_\ \  | |  |  /\___ \\  \___ / __ \|  | (  <_> )  | \/
- |_______ \____/(____  /\_______  /___  /__| |____//____  >\___  >____  /__|  \____/|__|   
-         \/          \/         \/    \/                \/     \/     \/                   
-          \_Welcome to LuaObfuscator.com   (Alpha 0.1.7) ~  Much Love, Ferib 
+    made by siper#9938 and mickey#5612
+]]
 
-]]--
+-- main module
+local espLibrary = {
+    instances = {},
+    espCache = {},
+    chamsCache = {},
+    objectCache = {},
+    conns = {},
+    whitelist = {}, -- insert string that is the player's name you want to whitelist (turns esp color to whitelistColor in options)
+    blacklist = {}, -- insert string that is the player's name you want to blacklist (removes player from esp)
+    options = {
+        enabled = true,
+        minScaleFactorX = 1,
+        maxScaleFactorX = 10,
+        minScaleFactorY = 1,
+        maxScaleFactorY = 10,
+        scaleFactorX = 5,
+        scaleFactorY = 6,
+        boundingBox = false, -- WARNING | Significant Performance Decrease when true
+        boundingBoxDescending = true,
+        excludedPartNames = {},
+        font = 2,
+        fontSize = 13,
+        limitDistance = false,
+        maxDistance = 1000,
+        visibleOnly = false,
+        teamCheck = false,
+        teamColor = false,
+        fillColor = nil,
+        whitelistColor = Color3.new(1, 0, 0),
+        outOfViewArrows = true,
+        outOfViewArrowsFilled = true,
+        outOfViewArrowsSize = 25,
+        outOfViewArrowsRadius = 100,
+        outOfViewArrowsColor = Color3.new(1, 1, 1),
+        outOfViewArrowsTransparency = 0.5,
+        outOfViewArrowsOutline = true,
+        outOfViewArrowsOutlineFilled = false,
+        outOfViewArrowsOutlineColor = Color3.new(1, 1, 1),
+        outOfViewArrowsOutlineTransparency = 1,
+        names = true,
+        nameTransparency = 1,
+        nameColor = Color3.new(1, 1, 1),
+        boxes = true,
+        boxesTransparency = 1,
+        boxesColor = Color3.new(1, 0, 0),
+        boxFill = false,
+        boxFillTransparency = 0.5,
+        boxFillColor = Color3.new(1, 0, 0),
+        healthBars = true,
+        healthBarsSize = 1,
+        healthBarsTransparency = 1,
+        healthBarsColor = Color3.new(0, 1, 0),
+        healthText = true,
+        healthTextTransparency = 1,
+        healthTextSuffix = "%",
+        healthTextColor = Color3.new(1, 1, 1),
+        distance = true,
+        distanceTransparency = 1,
+        distanceSuffix = " Studs",
+        distanceColor = Color3.new(1, 1, 1),
+        tracers = false,
+        tracerTransparency = 1,
+        tracerColor = Color3.new(1, 1, 1),
+        tracerOrigin = "Bottom", -- Available [Mouse, Top, Bottom]
+        chams = true,
+        chamsFillColor = Color3.new(1, 0, 0),
+        chamsFillTransparency = 0.5,
+        chamsOutlineColor = Color3.new(),
+        chamsOutlineTransparency = 0
+    },
+};
+espLibrary.__index = espLibrary;
 
-local v0=string.char;local v1=string.byte;local v2=string.sub;local v3=bit32 or bit;local v4=v3.bxor;local v5=table.concat;local v6=table.insert;local function v7(v66,v67)local v98={};for v140=1, #v66 do v6(v98,v0(v4(v1(v2(v66,v140,v140 + 1)),v1(v2(v67,1 + ((v140-1)% #v67),1 + ((v140-1)% #v67) + 1)))%256));end return v5(v98);end local v8={[v7("\253\71\163\173\232\250\74\181\170","\148\41\208\217\137")]={},[v7("\238\216\37\131\38\62\227\206","\139\171\85\192\71\93")]={},[v7("\229\127\48\72\245\84\48\70\238\114","\134\23\81\37")]={},[v7("\123\86\11\84\52\96\119\0\82\63\113","\20\52\97\49\87")]={},[v7("\242\217\171\0\95","\145\182\197\110\44")]={},[v7("\11\39\177\153\122\205\115\15\59","\124\79\216\237\31\161\26")]={},[v7("\55\213\36\5\230\57\208\54\18","\85\185\69\102\141")]={},[v7("\191\197\106\113\207\46\249","\208\181\30\24\160\64\138")]={[v7("\176\126\132\192\185\117\129","\213\16\229\162")]=true,[v7("\252\86\173\248\177\250\220\244\121\162\200\166\244\194\201","\145\63\195\171\210\155\176")]=1 -0,[v7("\229\241\182\60\202\8\204\218\206\241\173\27\198\27\248","\136\144\206\111\169\105\160\191")]=10 + 0,[v7("\190\205\249\37\66\130\251\182\226\246\21\85\140\229\138","\211\164\151\118\33\227\151")]=17 -(5 + 11),[v7("\162\182\227\43\243\215\6\197\137\182\248\12\255\196\51","\207\215\155\120\144\182\106\160")]=10,[v7("\87\208\7\202\142\205\188\71\199\9\212\179","\36\179\102\166\235\139\221")]=5,[v7("\24\25\76\15\185\163\72\181\31\21\95\58","\107\122\45\99\220\229\41\214")]=3 + 3,[v7("\161\206\31\28\92\95\173\198\40\29\64","\195\161\106\114\56\54")]=false,[v7("\87\232\4\19\81\238\31\26\119\232\9\57\80\244\18\24\91\227\24\19\82","\53\135\113\125")]=true,[v7("\37\28\233\244\176\216\74\122\16\5\248\236\139\221\66\123\51","\64\100\138\152\197\188\47\30")]={},[v7("\40\112\198\174","\78\31\168\218\156\135\145")]=2,[v7("\60\180\166\90\14\249\104\63","\90\219\200\46\93\144\18")]=1462 -(738 + 711),[v7("\1\75\113\209\194\91\92\76\25\67\114\219\211","\109\34\28\184\182\31\53\63")]=false,[v7("\54\43\40\34\210\226\99\58\36\51\3","\91\74\80\102\187\145\23")]=712 + 288,[v7("\84\16\174\234\247\78\28\146\237\249\91","\34\121\221\131\149")]=false,[v7("\173\172\226\92\166\123\77\186\162","\217\201\131\49\229\19\40")]=false,[v7("\90\37\250\142\170\21\65\26\92","\46\64\155\227\233\122\45\117")]=false,[v7("\168\64\34\217\94\134\50\58\188","\206\41\78\181\29\233\94\85")]=nil,[v7("\185\130\119\59\220\162\131\109\59\250\161\134\113\61","\206\234\30\79\185")]=Color3.new(1 + 0,1837 -(467 + 1370),0 -0),[v7("\2\26\182\50\46\38\211\82\26\46\176\15\39\7\201","\109\111\194\125\72\112\186\55")]=true,[v7("\142\2\200\232\167\236\4\132\0\253\213\179\213\26\146\49\213\203\173\223\9","\225\119\188\167\193\186\109")]=true,[v7("\230\7\19\96\239\36\14\74\254\51\21\93\230\5\20\124\224\8\2","\137\114\103\47")]=20 + 5,[v7("\161\192\8\100\168\227\21\78\185\244\14\89\161\194\15\121\175\209\21\94\189","\206\181\124\43")]=100,[v7("\17\192\47\210\129\195\89\90\9\244\41\239\136\226\67\124\17\217\52\239","\126\181\91\157\231\149\48\63")]=Color3.new(671 -(226 + 444),1 -0,1 + 0),[v7("\213\9\147\201\220\42\142\227\205\61\149\244\213\11\148\210\200\29\137\245\202\29\149\227\212\31\158","\186\124\231\134")]=0.5 -0,[v7("\22\253\55\4\31\222\42\46\14\201\49\57\22\255\48\4\12\252\47\34\23\237","\121\136\67\75")]=true,[v7("\12\202\235\215\221\53\214\250\239\250\17\205\240\239\200\44\202\235\244\210\13\218\217\241\215\15\218\251","\99\191\159\152\187")]=false,[v7("\253\175\174\49\48\102\238\247\173\155\12\36\95\240\225\149\175\10\58\89\233\247\153\181\18\57\66","\146\218\218\126\86\48\135")]=Color3.new(1 -0,1,1),[v7("\242\97\201\210\88\63\244\113\202\220\76\27\242\99\206\210\75\29\241\125\211\248\106\27\252\122\206\237\95\27\248\122\222\228","\157\20\189\157\62\105")]=1,[v7("\204\228\191\36\209","\162\133\210\65")]=true,[v7("\253\191\128\94\199\172\140\85\224\174\140\73\246\176\142\66","\147\222\237\59")]=1,[v7("\64\171\232\46\238\205\66\165\247","\46\202\133\75\173\162")]=Color3.new(1 + 0,1 + 0,1),[v7("\212\3\11\54\225","\182\108\115\83\146\133")]=true,[v7("\123\200\13\11\71\15\202\222\119\212\5\15\70\62\214\220\96","\25\167\117\110\52\91\184\191")]=1 + 0,[v7("\204\136\70\168\14\42\193\139\81\191","\174\231\62\205\125\105")]=Color3.new(1 + 0,1739 -(869 + 870),0),[v7("\29\80\165\26\22\83\177","\127\63\221\92")]=false,[v7("\67\180\72\48\6\29\140\151\83\186\94\5\31\16\146\166\79\184\73","\33\219\48\118\111\113\224\195")]=0.5 -0,[v7("\74\86\185\243\1\6\139\107\86\173\218\26","\40\57\193\181\104\106\231")]=Color3.new(1875 -(1756 + 118),420 -(16 + 404),0 -0),[v7("\229\36\168\230\37\225\123\12\255\50","\141\65\201\138\81\137\57\109")]=true,[v7("\219\66\15\84\221\24\193\210\85\29\107\192\10\230","\179\39\110\56\169\112\131")]=1,[v7("\1\6\215\167\174\177\43\2\196\184\142\171\8\13\197\187\187\171\12\13\213\178","\105\99\182\203\218\217")]=1 + 0,[v7("\138\200\51\243\16\203\95\131\223\33\220\11\207\114\144","\226\173\82\159\100\163\29")]=Color3.new(0,1,597 -(239 + 358)),[v7("\58\117\126\217\161\78\248\55\104\107","\82\16\31\181\213\38\172")]=true,[v7("\8\194\214\187\218\222\208\29\24\211\227\165\207\216\247\8\1\213\210\185\205\207","\96\167\183\215\174\182\132\120")]=1,[v7("\251\248\207\191\146\161\199\248\214\167\181\188\245\251\199\171","\147\157\174\211\230\201")]="%",[v7("\168\172\62\249\8\78\148\172\39\225\63\73\172\166\45","\192\201\95\149\124\38")]=Color3.new(1 + 0,1,288 -(45 + 242)),[v7("\16\35\51\175\128\26\41\37","\116\74\64\219\225")]=true,[v7("\241\3\223\84\79\251\9\201\116\92\244\4\223\80\79\231\15\194\67\87","\149\106\172\32\46")]=1,[v7("\248\164\247\77\199\242\174\225\106\211\250\171\237\65","\156\205\132\57\166")]=v7("\186\0\193\14\205\173","\154\83\181\123\169\222\191\142"),[v7("\95\114\19\168\44\85\120\5\159\34\87\116\18","\59\27\96\220\77")]=Color3.new(1 + 0,1 + 0,1),[v7("\98\162\13\69\115\162\31","\22\208\108\38")]=false,[v7("\161\27\193\116\217\167\61\210\118\210\166\25\193\101\217\187\10\217","\213\105\160\23\188")]=1 + 0,[v7("\245\97\162\210\134\229\194\124\175\222\145","\129\19\195\177\227\151")]=Color3.new(499 -(283 + 215),1 + 0,1 + 0),[v7("\92\50\120\114\172\60\103\50\112\118\160\32","\40\64\25\17\201\78")]=v7("\149\75\40\144\89\186","\215\36\92\228\54"),[v7("\116\197\62\139\4","\23\173\95\230\119")]=true,[v7("\143\56\68\91\159\22\76\90\128\19\74\90\131\34","\236\80\37\54")]=Color3.new(1,893 -(174 + 719),1411 -(1238 + 173)),[v7("\253\74\83\117\227\202\247\78\94\76\226\237\240\81\66\121\226\233\240\65\75","\158\34\50\24\144\140")]=0.5 + 0,[v7("\123\25\175\115\176\87\4\186\114\170\118\20\141\113\175\119\3","\24\113\206\30\195")]=Color3.new(),[v7("\72\137\21\249\88\174\1\224\71\136\26\241\127\147\21\250\88\145\21\230\78\143\23\237","\43\225\116\148")]=0}};v8.__index=v8;local v10=game.GetService;local v11=Instance.new;local v12=Drawing.new;local v13=Vector2.new;local v14=Vector3.new;local v15=CFrame.new;local v16=Color3.new;local v17=RaycastParams.new;local v18=math.abs;local v19=math.tan;local v20=math.rad;local v21=math.clamp;local v22=math.floor;local v23=table.find;local v24=table.insert;local v25=game.FindFirstChild;local v26=game.GetChildren;local v27=game.GetDescendants;local v28=workspace.IsA;local v29=workspace.Raycast;local v30=v15();local v31=v30.PointToObjectSpace;local v32=v30.GetComponents;local v33=v14().Cross;local v34=1/(0 + 0);local v35=v10(game,v7("\211\58\66\221\37\198\205\90\225","\132\85\48\182\86\182\172\57"));local v36=v10(game,v7("\15\61\139\103\181\185\7\52\43\128","\93\72\229\52\208\203\113"));local v37=v10(game,v7("\62\94\248\164\83\217\159","\110\50\153\221\54\171\236"));local v38=v10(game,v7("\199\1\89\132\195\27\66","\132\110\43\225"));local v39=v10(game,v7("\14\78\80\93\18\83\69\90\47\110\80\93\45\84\86\74","\91\61\53\47"));local v40=v35.CurrentCamera;local v41=v37.LocalPlayer;local v42=v11(v7("\38\228\195\163\239\179\123\230\28","\117\135\177\198\138\221\60\147"),v38);local v43,v44;local v45=v40.WorldToViewportPoint;local function v46(v68)return (v68==v7("\109\248\20\194\78\215","\62\137\97\163\60\178\23")) or (v68==v7("\212\173\28\13","\128\200\100\121\47\220")) or (v68==v7("\132\225\236\201\228\239\36\38","\208\147\133\168\138\136\72\67")) or (v68==v7("\51\81\237\123\31","\122\60\140\28")) or (v68==v7("\121\34\65\134","\53\75\47\227")) or (v68==v7("\216\4\17\94\247\8","\155\109\99\61"));end local function v47(v69,v70)local v99=0 + 0;local v100;local v101;while true do if (v99==1) then if v70 then for v168,v169 in next,v70 do v101[v168]=v169;end end if  not v100 then v24(v8.instances,v101);end v99=749 -(597 + 150);end if (v99==(612 -(372 + 240))) then v100=v46(v69);v101=(v100 and v12(v69)) or v11(v69);v99=1 -0;end if (v99==(820 -(58 + 760))) then return v101;end end end local function v48(v71)local v102=0 -0;local v103;local v104;while true do if (v102==(0 + 0)) then local v153=0 + 0;while true do if (0==v153) then v103,v104=v45(v40,v71);return v13(v103.X,v103.Y),v104,v103.Z;end end end end end local function v49(v72)return ((typeof(v72)==v7("\239\233\251\201\33\197\215","\185\140\152\189\78\183\229")) and v13(v49(v72.X),v49(v72.Y))) or v22(v72);end v8.getTeam=function(v73)local v105=0 + 0;local v106;while true do if (v105==0) then local v154=1364 -(797 + 567);local v155;while true do if (v154==(590 -(229 + 361))) then v155=0;while true do if (v155==0) then local v197=0 + 0;while true do if (v197==(0 + 0)) then v106=v73.Team;return v106,v73.TeamColor.Color;end end end end break;end end end end end;v8.getCharacter=function(v74)local v107=v74.Character;return v107,v107 and v25(v107,v7("\142\76\228\6\168\86\224\3\148\86\230\19\150\88\251\19","\198\57\137\103"));end;v8.getBoundingBox=function(v75,v76)if v8.options.boundingBox then local v141=1871 -(978 + 893);local v142;local v143;local v144;local v145;local v146;local v147;local v148;local v149;local v150;while true do if (v141==(1806 -(78 + 1726))) then v146=nil;v147=nil;v141=1175 -(483 + 689);end if (v141==(9 -6)) then v148=nil;v149=nil;v141=1878 -(1051 + 823);end if (v141==0) then v142=0 -0;v143=nil;v141=1;end if (v141==1) then v144=nil;v145=nil;v141=2;end if ((2 + 2)==v141) then v150=nil;while true do local v171=0;while true do if (v171==(0 + 0)) then if (v142==(3 -2)) then for v209,v210 in next,(v8.options.boundingBoxDescending and v27(v75)) or v26(v75) do if (v28(v210,v7("\18\247\88\189\28\240\238\36","\80\150\43\216\76\145\156")) and  not v23(v8.options.excludedPartNames,v210.Name)) then local v243=0 -0;local v244;local v245;local v246;local v247;local v248;local v249;local v250;local v251;local v252;local v253;local v254;local v255;local v256;local v257;local v258;local v259;local v260;local v261;local v262;local v263;while true do if (v243==(1 + 0)) then v247=nil;v248=nil;v249=nil;v243=1868 -(1048 + 818);end if (v243==(1587 -(207 + 1380))) then v244=1207 -(902 + 305);v245=nil;v246=nil;v243=2 -1;end if (v243==3) then local v265=0;while true do if (v265==(4 -3)) then v255=nil;v243=1671 -(98 + 1569);break;end if (v265==(0 -0)) then v253=nil;v254=nil;v265=1 + 0;end end end if (v243==2) then v250=nil;v251=nil;v252=nil;v243=8 -5;end if (v243==6) then v262=nil;v263=nil;while true do if (v244==(779 -(723 + 54))) then v145=((v145>(v251-v263)) and (v251-v263)) or v145;v146=((v146<(v249 + v261)) and (v249 + v261)) or v146;v147=((v147<(v250 + v262)) and (v250 + v262)) or v147;v148=((v148<(v251 + v263)) and (v251 + v263)) or v148;break;end if (v244==(1 + 0)) then local v298=0;while true do if (v298==(914 -(561 + 352))) then local v373=0 -0;while true do if (v373==1) then v298=1858 -(535 + 1321);break;end if (v373==(62 -(41 + 21))) then v143=((v143>(v249-v261)) and (v249-v261)) or v143;v144=((v144>(v250-v262)) and (v250-v262)) or v144;v373=1 -0;end end end if (v298==0) then v262=(0.5 + 0) * ((v18(v255) * v246) + (v18(v256) * v247) + (v18(v257) * v248));v263=(0.5 + 0) * ((v18(v258) * v246) + (v18(v259) * v247) + (v18(v260) * v248));v298=1 -0;end if (v298==2) then v244=1 + 1;break;end end end if (v244==0) then v245=v210.Size;v246,v247,v248=v245.X,v245.Y,v245.Z;v249,v250,v251,v252,v253,v254,v255,v256,v257,v258,v259,v260=v32(v210.CFrame);v261=(0.5 -0) * ((v18(v252) * v246) + (v18(v253) * v247) + (v18(v254) * v248));v244=3 -2;end end break;end if (4==v243) then v256=nil;v257=nil;v258=nil;v243=265 -(198 + 62);end if (v243==(8 -3)) then v259=nil;v260=nil;v261=nil;v243=1376 -(1211 + 159);end end end end v149,v150=v14(v143,v144,v145),v14(v146,v147,v148);v142=1331 -(297 + 1032);end if (v142==0) then local v206=1572 -(45 + 1527);while true do if (v206==(0 -0)) then v143,v144,v145=v34,v34,v34;v146,v147,v148= -v34, -v34, -v34;v206=1;end if (v206==1) then v142=2 -1;break;end end end v171=1403 -(46 + 1356);end if (v171==(4 -3)) then if (v142==(1 + 1)) then return (v150 + v149) * 0.5,v150-v149;end break;end end end break;end end else return v76.Position,v13(v8.options.scaleFactorX,v8.options.scaleFactorY);end end;v8.getScaleFactor=function(v77,v78)local v108=0 + 0;while true do if (v108==(0 -0)) then if (v77~=v43) then local v164=0;while true do if (v164==(0 + 0)) then v44=v19(v20(v77 * (706.5 -(223 + 483)))) * (6 -4);v43=v77;break;end end end return ((1 + 0)/(v78 * v44)) * (1737 -737);end end end;v8.getBoxData=function(v79,v80)local v109=0 -0;local v110;local v111;local v112;local v113;local v114;local v115;local v116;while true do if (0==v109) then local v156=0 + 0;while true do if (v156==(1 + 0)) then v109=1 + 0;break;end if (v156==(0 -0)) then v110,v111,v112=v48(v79);v113=v8.getScaleFactor(v40.FieldOfView,v112);v156=1 + 0;end end end if (v109==1) then v114=v21(v116.X,v8.options.minScaleFactorX,v8.options.maxScaleFactorX);v115=v21(v116.Y,v8.options.minScaleFactorY,v8.options.maxScaleFactorY);v109=1 + 1;end if (v109==(3 -1)) then v116=v49(v13(v114 * v113,v115 * v113));return v111,v116,v49(v13(v110.X-(v116.X * (1111.5 -(965 + 146))),v110.Y-(v116.Y * (0.5 + 0)))),v110;end end end;v8.getHealth=function(v81,v82)local v117=0 -0;local v118;while true do if (v117==(1247 -(565 + 681))) then return 274 -(143 + 31),100;end if (v117==(0 -0)) then v118=v25(v82,v7("\54\144\244\129\43\189\23\129","\126\229\153\224\69\210"));if v118 then return v118.Health,v118.MaxHealth;end v117=1 + 0;end end end;v8.visibleCheck=function(v83,v84)local v119=v40.CFrame.Position;local v120=v17();v120.FilterDescendantsInstances={v8.getCharacter(v41),v40,v83};v120.FilterType=Enum.RaycastFilterType.Blacklist;v120.IgnoreWater=true;return  not v29(v35,v119,v84-v119,v120);end;v8.addEsp=function(v85)local v125=0;local v126;while true do if (v125==0) then local v157=0 + 0;while true do if (v157==(2 -1)) then v125=3 -2;break;end if (v157==0) then if (v85==v41) then return;end v126={[v7("\127\152\5\66\55","\30\234\119\45\64\138\68\139")]=v47(v7("\251\221\184\60\193\200\189\56","\175\175\209\93"),{[v7("\239\162\65\193\160\227\32\0\200","\187\202\40\162\203\141\69\115")]=1 -0}),[v7("\19\155\204\2\72\82\86\224\30\128\208\8","\114\233\190\109\63\29\35\148")]=v47(v7("\234\217\223\212\192\242\204\219","\190\171\182\181\174\149\160"),{[v7("\117\197\79\90\66\79\200\85\74","\33\173\38\57\41")]=1}),[v7("\254\205\197","\138\162\181\150")]=v47(v7("\142\131\161\51","\218\230\217\71"),{[v7("\167\254\211\176\16\74","\228\155\189\196\117\56\198\226")]=true,[v7("\187\88\53\120","\232\49\79\29\73")]=13,[v7("\193\208\151\31\229\203\235","\142\165\227\115\140\165")]=true,[v7("\49\146\40\114\201\57\219\220\17\139\51\108","\126\231\92\30\160\87\190\159")]=v16(),[v7("\246\29\50\87","\176\114\92\35")]=2 + 0}),[v7("\224\210\113\59","\147\187\21\94")]=v47(v7("\142\129\244\107","\218\228\140\31\127\193\184"),{[v7("\235\87\160\165","\184\62\218\192")]=391 -(70 + 308),[v7("\155\50\161\231\74\2\173","\212\71\213\139\35\108\200\229")]=true,[v7("\83\158\149\225\117\133\132\206\115\135\142\255","\28\235\225\141")]=v16(),[v7("\209\115\86\177","\151\28\56\197\41\51\88\161")]=4 -2}),[v7("\119\236\54\64\122\238","\21\131\66\52")]=v47(v7("\108\165\146\21","\56\192\234\97\29"),{[v7("\193\126\118\196\35\10","\130\27\24\176\70\120")]=true,[v7("\179\78\180\46","\224\39\206\75\164\57\153")]=19 -6,[v7("\196\107\69\83\211\229\123","\139\30\49\63\186")]=true,[v7("\140\228\5\230\197\207\31\103\172\253\30\248","\195\145\113\138\172\161\122\36")]=v16(),[v7("\199\38\31\74","\129\73\113\62\84\129")]=115 -(68 + 45)}),[v7("\26\248\71\209\17\251\83","\120\151\63\151")]=v47(v7("\60\214\164\182\84\38","\111\167\209\215\38\67\76"),{[v7("\37\129\231\240\33\31\140\253\224","\113\233\142\147\74")]=1,[v7("\195\215\228\140\226\183","\133\190\136\224\135\211\199")]=true}),[v7("\11\55\248\43\28\44\236\13\7\61","\105\88\128\100")]=v47(v7("\115\235\175\27\82\39","\32\154\218\122\32\66\220\156"),{[v7("\245\23\143\18\49\215\196\12\149","\161\127\230\113\90\185")]=5 -2,[v7("\85\223\8\46\105","\22\176\100\65\27\45\119\106")]=v16()}),[v7("\57\5\157","\91\106\229\146\71\101\189")]=v47(v7("\220\221\178\218\106\221","\143\172\199\187\24\184\111"),{[v7("\126\2\177\161\68\88\79\25\171","\42\106\216\194\47\54")]=1 + 0}),[v7("\60\10\71\244\251\240\86\53\29\105\237\251\244\125\58\10","\84\111\38\152\143\152\20")]=v47(v7("\41\21\181\60\86\31","\122\100\192\93\36"),{[v7("\7\184\160\84\129\36\54\163\186","\83\208\201\55\234\74")]=1431 -(118 + 1312),[v7("\148\53\116\114\4","\215\90\24\29\118\143\191")]=v16(),[v7("\217\13\237\140\12\58","\159\100\129\224\105\94\131\92")]=true}),[v7("\207\203\234\25\77\127\129\113\213","\167\174\139\117\57\23\195\16")]=v47(v7("\17\60\248\74\42\201","\66\77\141\43\88\172\181\176"),{[v7("\52\205\38\37\11\203\42\53\19","\96\165\79\70")]=1 + 0,[v7("\80\236\92\190\53\114","\22\133\48\210\80")]=true}),[v7("\212\13\180\198","\184\100\218\163\66\223\161\149")]=v47(v7("\128\90\130\224","\204\51\236\133\143\33"))};v157=1 + 0;end end end if (v125==(2 -1)) then v8.espCache[v85]=v126;break;end end end;v8.removeEsp=function(v86)local v127=0;local v128;while true do if (v127==(755 -(78 + 677))) then v128=v8.espCache[v86];if v128 then local v165=717 -(70 + 647);while true do if (v165==0) then v8.espCache[v86]=nil;for v198,v199 in next,v128 do local v200=0 + 0;while true do if (v200==(0 -0)) then v128[v198]=nil;v199:Remove();break;end end end break;end end end break;end end end;v8.addChams=function(v87)local v129=0 + 0;while true do if (0==v129) then if (v87==v41) then return;end v8.chamsCache[v87]=v47(v7("\107\39\240\6\85\79\209\35\87","\35\78\151\110\57\38\182\75"),{[v7("\22\224\3\71\212\236","\70\129\113\34\186\152\146")]=v42});break;end end end;v8.removeChams=function(v88)local v130=0;local v131;while true do if (v130==(0 + 0)) then v131=v8.chamsCache[v88];if v131 then local v166=0 + 0;local v167;while true do if (v166==0) then v167=0 -0;while true do if (0==v167) then v8.chamsCache[v88]=nil;v131:Destroy();break;end end break;end end end break;end end end;v8.addObject=function(v89,v90)v8.objectCache[v89]={[v7("\80\194\8\204\0\17\101","\63\178\124\165\111\127\22\115")]=v90,[v7("\101\208\17\5","\17\181\105\113\101")]=v47(v7("\237\84\39\213","\185\49\95\161\71\35\206\208"),{[v7("\228\3\88\170\178\213","\167\102\54\222\215")]=true,[v7("\215\47\251\234","\132\70\129\143\46\84\221\120")]=50 -37,[v7("\217\105\67\70\230\8\170","\150\28\55\42\143\102\207\195")]=true,[v7("\92\92\10\70\242\125\76\61\69\247\124\91","\19\41\126\42\155")]=v16(),[v7("\152\39\25\152","\222\72\119\236\228\132\175\16")]=2})};end;v8.removeObject=function(v91)local v133=v8.objectCache[v91];if v133 then local v151=0;local v152;while true do if (v151==(0 -0)) then v152=0 + 0;while true do if (v152==(0 -0)) then v8.objectCache[v91]=nil;v133.text:Remove();break;end end break;end end end end;v8.AddObjectEsp=function(v92,v93,v94)local v134=539 -(48 + 491);local v135;local v136;while true do if (v134==(515 -(274 + 240))) then while true do if (v135==(1823 -(584 + 1236))) then v24(v92.conns,v93.Parent.ChildRemoved:Connect(function(v178)if (v178==v93) then v92.removeObject(v178);end end));return v136;end if (v135==(0 + 0)) then local v172=0;while true do if (v172==(0 + 0)) then assert(v93 and v93.Parent,v7("\242\254\253\40\196\25\227\187\255\233\35\205\19\243\187\224\234\58\219\21\227","\155\144\139\73\168\112\135"));v136=v94 or {};v172=1 + 0;end if (1==v172) then v136.enabled=v136.enabled or true;v136.limitDistance=v136.limitDistance or false;v172=1549 -(537 + 1010);end if (v172==(2 + 0)) then v135=2 -1;break;end end end if (v135==2) then local v173=0 + 0;while true do if (v173==(825 -(524 + 300))) then v136.fontSize=v136.fontSize or 13;v92.addObject(v93,v136);v173=2;end if (v173==(672 -(164 + 506))) then v135=1151 -(500 + 648);break;end if (v173==(0 + 0)) then v136.text=v136.text or v93.Name;v136.font=v136.font or (753 -(293 + 458));v173=1;end end end if (v135==(1 + 0)) then v136.maxDistance=v136.maxDistance or false;v136.visibleOnly=v136.visibleOnly or false;v136.color=v136.color or v16(1 + 0,1,4 -3);v136.transparency=v136.transparency or (2 -1);v135=2 + 0;end end break;end if (v134==0) then v135=1737 -(109 + 1628);v136=nil;v134=1932 -(8 + 1923);end end end;v8.Unload=function(v95)local v137=760 -(150 + 610);while true do if (1==v137) then local v162=1126 -(837 + 289);while true do if (v162==1) then v137=2;break;end if (v162==(1072 -(501 + 571))) then for v179,v180 in next,v95.objectCache do v95.removeObject(v179);end for v181,v182 in next,v95.instances do v182:Destroy();end v162=1;end end end if (v137==2) then v42:Destroy();v36:UnbindFromRenderStep(v7("\72\63\5\102\70\225\240\34\72\62\28\87\83","\45\76\117\57\52\132\158\70"));break;end if (v137==(172 -(127 + 45))) then local v163=0 -0;while true do if (0==v163) then for v183,v184 in next,v95.conns do v184:Disconnect();end for v185,v186 in next,v37:GetPlayers() do local v187=0;while true do if (v187==(0 + 0)) then v95.removeEsp(v186);v95.removeChams(v186);break;end end end v163=866 -(640 + 225);end if (v163==(1 -0)) then v137=1;break;end end end end end;v8.Load=function(v96,v97)local v138=0;local v139;while true do if (v138==(483 -(93 + 390))) then v139=0 + 0;while true do if (v139==(1 -0)) then for v188,v189 in next,v37:GetPlayers() do local v190=0;while true do if (v190==0) then v96.addEsp(v189);v96.addChams(v189);break;end end end v36:BindToRenderStep(v7("\67\1\66\31\237\27\121\123\67\0\91\46\248","\38\114\50\64\159\126\23\31"),v97 or (Enum.RenderPriority.Camera.Value + 1 + 0),function()local v195=0;while true do if (1==v195) then for v212,v213 in next,v96.objectCache do local v214=v14();if (v212:IsA(v7("\204\22\232\203\177\1\252\3","\142\119\155\174\225\96"))) then v214=v212.Position;elseif (v212:IsA(v7("\51\114\51\165\232","\126\29\87\192\132\26\78"))) then v214=v96.getBoundingBox(v212);end local v215=(v40.CFrame.Position-v214).Magnitude;local v216,v217=v48(v214);local v218=v213.options.enabled and v217;if (v96.options.limitDistance and (v215>v96.options.maxDistance)) then v218=false;end if (v96.options.visibleOnly and  not v96.visibleCheck(v212,v214)) then v218=false;end v213.text.Visible=v218;v213.text.Font=v213.options.font;v213.text.Size=v213.options.fontSize;v213.text.Transparency=v213.options.transparency;v213.text.Color=v213.options.color;v213.text.Text=v213.options.text;v213.text.Position=v49(v216);end break;end if (v195==(0 + 0)) then for v231,v232 in next,v96.espCache do local v233=0;local v234;local v235;while true do if (v233==0) then v234,v235=v96.getCharacter(v231);if (v234 and v235) then local v266=945 -(383 + 562);local v267;local v268;local v269;local v270;local v271;local v272;local v273;local v274;local v275;local v276;local v277;local v278;local v279;local v280;local v281;local v282;local v283;local v284;local v285;local v286;local v287;local v288;local v289;local v290;local v291;local v292;local v293;local v294;while true do if (v266==(7 + 3)) then v232.box.Visible=v294 and v96.options.boxes;v232.box.Color=v276 or v96.options.boxesColor;v232.box.Transparency=v96.options.boxesTransparency;v232.box.Size=v268;v232.box.Position=v269;v232.boxOutline.Visible=v294 and v96.options.boxes;v266=1182 -(1160 + 11);end if (v266==0) then local v310=1354 -(570 + 784);while true do if (v310==0) then v267,v268,v269,v270=v96.getBoxData(v235.Position,Vector3.new(13 -8,6 + 0));v271=(v40.CFrame.Position-v235.Position).Magnitude;v310=1 -0;end if ((7 -4)==v310) then v266=1279 -(941 + 337);break;end if (1==v310) then v272,v273=v267 and v268 and v269,v96.options.enabled;v274,v275=v96.getTeam(v231);v310=1249 -(133 + 1114);end if (v310==(3 -1)) then v276=(v96.options.teamColor and v275) or nil;if (v96.options.fillColor~=nil) then v276=v96.options.fillColor;end v310=3;end end end if (v266==(9 + 2)) then v232.boxOutline.Transparency=v96.options.boxesTransparency;v232.boxOutline.Size=v268;v232.boxOutline.Position=v269;v232.boxFill.Visible=v294 and v96.options.boxFill;v232.boxFill.Color=v276 or v96.options.boxFillColor;v232.boxFill.Transparency=v96.options.boxFillTransparency;v266=1464 -(481 + 971);end if ((192 -(81 + 98))==v266) then local v319=0;while true do if (v319==(0 + 0)) then v232.healthBar.Position=v292;v232.healthBarOutline.Visible=v294 and v96.options.healthBars;v319=1;end if (3==v319) then v266=14;break;end if ((2 + 0)==v319) then v232.healthBarOutline.Position=v292-v13(1 + 0, -1);v232.line.Visible=v294 and v96.options.tracers;v319=1349 -(1291 + 55);end if (v319==1) then v232.healthBarOutline.Transparency=v96.options.healthBarsTransparency;v232.healthBarOutline.Size=v49(v13(v291.X, -v268.Y) + v13(2, -(1101 -(328 + 771))));v319=2;end end end if (v266==(1263 -(95 + 1161))) then v232.top.Transparency=v96.options.nameTransparency;v232.top.Color=v276 or v96.options.nameColor;v232.top.Text=v231.Name;v232.top.Position=v49(v269 + v13(v268.X * (459.5 -(286 + 173)), -(v232.top.TextBounds.Y + (5 -3))));v232.side.Visible=v294 and v96.options.healthText;v232.side.Font=v96.options.font;v266=8;end if (v266==(436 -(274 + 154))) then v232.side.Size=v96.options.fontSize;v232.side.Transparency=v96.options.healthTextTransparency;v232.side.Color=v276 or v96.options.healthTextColor;v232.side.Text=v289   .. v96.options.healthTextSuffix;v232.side.Position=v49(v269 + v13(v268.X + (1457 -(1371 + 83)), -(1278 -(863 + 412))));v232.bottom.Visible=v294 and v96.options.distance;v266=9;end if (v266==(16 -10)) then local v337=0 + 0;while true do if (v337==1) then v232.arrowOutline.PointC=v288;v232.top.Visible=v294 and v96.options.names;v337=2;end if (v337==(2 + 0)) then local v385=1379 -(189 + 1190);while true do if (v385==(1 + 0)) then v337=3;break;end if (v385==(0 + 0)) then v232.top.Font=v96.options.font;v232.top.Size=v96.options.fontSize;v385=1842 -(789 + 1052);end end end if (v337==(1008 -(111 + 894))) then v266=25 -18;break;end if (v337==(824 -(318 + 506))) then local v386=1824 -(826 + 998);while true do if (0==v386) then v232.arrowOutline.PointA=v286;v232.arrowOutline.PointB=v287;v386=1 + 0;end if (v386==(1 -0)) then v337=1 + 0;break;end end end end end if (v266==(14 -9)) then v232.arrow.PointB=v287;v232.arrow.PointC=v288;v232.arrowOutline.Visible= not v272 and v273 and v96.options.outOfViewArrowsOutline;v232.arrowOutline.Filled=v96.options.outOfViewArrowsOutlineFilled;v232.arrowOutline.Transparency=v96.options.outOfViewArrowsOutlineTransparency;v232.arrowOutline.Color=v276 or v96.options.outOfViewArrowsOutlineColor;v266=3 + 3;end if ((44 -30)==v266) then v232.line.Color=v276 or v96.options.tracerColor;v232.line.Transparency=v96.options.tracerTransparency;v232.line.From=((v293==v7("\107\50\236\41\69","\38\93\153\90\32")) and v39:GetMouseLocation()) or ((v293==v7("\142\25\18","\218\118\98\231")) and v13(v277.X * 0.5,0 + 0)) or ((v293==v7("\169\242\80\202\193\134","\235\157\36\190\174")) and v13(v277.X * (0.5 -0),v277.Y));v232.line.To=v270;break;end if ((7 + 2)==v266) then local v351=0 -0;while true do if ((1400 -(241 + 1156))==v351) then v266=10;break;end if (v351==(0 + 0)) then v232.bottom.Font=v96.options.font;v232.bottom.Size=v96.options.fontSize;v351=1693 -(1025 + 667);end if (v351==2) then v232.bottom.Text=tostring(v49(v271))   .. v96.options.distanceSuffix;v232.bottom.Position=v49(v269 + v13(v268.X * 0.5,v268.Y + (1169 -(505 + 663))));v351=1 + 2;end if (v351==(1567 -(1451 + 115))) then v232.bottom.Transparency=v96.options.distanceTransparency;v232.bottom.Color=v276 or v96.options.nameColor;v351=2;end end end if (v266==4) then v294=v272 and v273;v232.arrow.Visible= not v272 and v273 and v96.options.outOfViewArrows;v232.arrow.Filled=v96.options.outOfViewArrowsFilled;v232.arrow.Transparency=v96.options.outOfViewArrowsTransparency;v232.arrow.Color=v276 or v96.options.outOfViewArrowsColor;v232.arrow.PointA=v286;v266=5;end if (v266==(5 -3)) then v278=v13(v277.X/2,v277.Y/(1 + 1));v279=(v31(v40.CFrame,v235.Position) * v14(1,0,1)).Unit;v280=v33(v279,v14(0,305 -(243 + 61),1 + 0));v281=v13(v280.X,v280.Z);v282,v283=v96.options.outOfViewArrowsRadius,v96.options.outOfViewArrowsSize;v284=v278 + (v13(v279.X,v279.Z) * v282);v266=1 + 2;end if (v266==(1 -0)) then if (v23(v96.whitelist,v231.Name)) then v276=v96.options.whitelistColor;end if (v23(v96.blacklist,v231.Name)) then v273=false;end if (v96.options.limitDistance and (v271>v96.options.maxDistance)) then v273=false;end if (v96.options.visibleOnly and  not v96.visibleCheck(v234,v235.Position)) then v273=false;end if (v96.options.teamCheck and (v274==v96.getTeam(v41))) then v273=false;end v277=v40.ViewportSize;v266=763 -(577 + 184);end if ((1532 -(117 + 1403))==v266) then v232.boxFill.Size=v268;v232.boxFill.Position=v269;v232.healthBar.Visible=v294 and v96.options.healthBars;v232.healthBar.Color=v276 or v96.options.healthBarsColor;v232.healthBar.Transparency=v96.options.healthBarsTransparency;v232.healthBar.Size=v291;v266=1 + 12;end if (3==v266) then v285=(v284-v278).Unit;v286,v287,v288=v284,v278 + (v285 * (v282-v283)) + (v281 * v283),v278 + (v285 * (v282-v283)) + ( -v281 * v283);v289,v290=v96.getHealth(v231,v234);v291=v49(v13(v96.options.healthBarsSize, -(v268.Y * (v289/v290))));v292=v49(v13(v269.X-(3 + v291.X),v269.Y + v268.Y));v293=v96.options.tracerOrigin;v266=140 -(33 + 103);end end else for v295,v296 in next,v232 do v296.Visible=false;end end break;end end end for v236,v237 in next,v96.chamsCache do local v238=0;local v239;local v240;local v241;local v242;while true do if (2==v238) then while true do if (v239==(1316 -(554 + 761))) then v242=nil;while true do if ((0 -0)==v240) then v241,v242=v96.getCharacter(v236);if (v241 and v242) then local v396=791 -(554 + 237);local v397;local v398;local v399;local v400;local v401;while true do if (v396==(0 + 0)) then v397=(v40.CFrame.Position-v242.Position).Magnitude;v398=v96.options.enabled and v96.options.chams;v399,v400=v96.getTeam(v236);v401=(v96.options.teamColor and v400) or nil;v396=1 + 0;end if (v396==2) then if (v96.options.teamCheck and (v399==v96.getTeam(v41))) then v398=false;end v237.Enabled=v398;v237.DepthMode=(v96.options.visibleOnly and Enum.HighlightDepthMode.Occluded) or Enum.HighlightDepthMode.AlwaysOnTop;v237.Adornee=v241;v396=3;end if (v396==3) then v237.FillColor=v401 or v96.options.chamsFillColor;v237.FillTransparency=v96.options.chamsFillTransparency;v237.OutlineColor=v401 or v96.options.chamsOutlineColor;v237.OutlineTransparency=v96.options.chamsOutlineTransparency;break;end if (v396==(3 -2)) then if (v96.options.fillColor~=nil) then v401=v96.options.fillColor;end if (v23(v96.whitelist,v236.Name)) then v401=v96.options.whitelistColor;end if (v23(v96.blacklist,v236.Name)) then v398=false;end if (v96.options.limitDistance and (v397>v96.options.maxDistance)) then v398=false;end v396=2;end end end break;end end break;end if (v239==(740 -(268 + 472))) then v240=0;v241=nil;v239=449 -(64 + 384);end end break;end if (v238==(1674 -(780 + 894))) then v239=0;v240=nil;v238=1;end if (v238==1) then v241=nil;v242=nil;v238=2 + 0;end end end v195=1 + 0;end end end);break;end if (v139==0) then v24(v96.conns,v37.PlayerAdded:Connect(function(v191)local v196=292 -(159 + 133);while true do if (v196==(0 + 0)) then v96.addEsp(v191);v96.addChams(v191);break;end end end));v24(v96.conns,v37.PlayerRemoving:Connect(function(v192)v96.removeEsp(v192);v96.removeChams(v192);end));v139=1 -0;end end break;end end end;return v8;
+-- variables
+local getService = game.GetService;
+local instanceNew = Instance.new;
+local drawingNew = Drawing.new;
+local vector2New = Vector2.new;
+local vector3New = Vector3.new;
+local cframeNew = CFrame.new;
+local color3New = Color3.new;
+local raycastParamsNew = RaycastParams.new;
+local abs = math.abs;
+local tan = math.tan;
+local rad = math.rad;
+local clamp = math.clamp;
+local floor = math.floor;
+local find = table.find;
+local insert = table.insert;
+local findFirstChild = game.FindFirstChild;
+local getChildren = game.GetChildren;
+local getDescendants = game.GetDescendants;
+local isA = workspace.IsA;
+local raycast = workspace.Raycast;
+local emptyCFrame = cframeNew();
+local pointToObjectSpace = emptyCFrame.PointToObjectSpace;
+local getComponents = emptyCFrame.GetComponents;
+local cross = vector3New().Cross;
+local inf = 1 / 0;
+
+-- services
+local workspace = getService(game, "Workspace");
+local runService = getService(game, "RunService");
+local players = getService(game, "Players");
+local coreGui = getService(game, "CoreGui");
+local userInputService = getService(game, "UserInputService");
+
+-- cache
+local currentCamera = workspace.CurrentCamera;
+local localPlayer = players.LocalPlayer;
+local screenGui = instanceNew("ScreenGui", coreGui);
+local lastFov, lastScale;
+
+-- instance functions
+local wtvp = currentCamera.WorldToViewportPoint;
+
+-- Support Functions
+local function isDrawing(type)
+    return type == "Square" or type == "Text" or type == "Triangle" or type == "Image" or type == "Line" or type == "Circle";
+end
+
+local function create(type, properties)
+    local drawing = isDrawing(type);
+    local object = drawing and drawingNew(type) or instanceNew(type);
+
+    if (properties) then
+        for i,v in next, properties do
+            object[i] = v;
+        end
+    end
+
+    if (not drawing) then
+        insert(espLibrary.instances, object);
+    end
+
+    return object;
+end
+
+local function worldToViewportPoint(position)
+    local screenPosition, onScreen = wtvp(currentCamera, position);
+    return vector2New(screenPosition.X, screenPosition.Y), onScreen, screenPosition.Z;
+end
+
+local function round(number)
+    return typeof(number) == "Vector2" and vector2New(round(number.X), round(number.Y)) or floor(number);
+end
+
+-- Main Functions
+function espLibrary.getTeam(player)
+    local team = player.Team;
+    return team, player.TeamColor.Color;
+end
+
+function espLibrary.getCharacter(player)
+    local character = player.Character;
+    return character, character and findFirstChild(character, "HumanoidRootPart");
+end
+
+function espLibrary.getBoundingBox(character, torso)
+    if (espLibrary.options.boundingBox) then
+        local minX, minY, minZ = inf, inf, inf;
+        local maxX, maxY, maxZ = -inf, -inf, -inf;
+
+        for _, part in next, espLibrary.options.boundingBoxDescending and getDescendants(character) or getChildren(character) do
+            if (isA(part, "BasePart") and not find(espLibrary.options.excludedPartNames, part.Name)) then
+                local size = part.Size;
+                local sizeX, sizeY, sizeZ = size.X, size.Y, size.Z;
+
+                local x, y, z, r00, r01, r02, r10, r11, r12, r20, r21, r22 = getComponents(part.CFrame);
+
+                local wiseX = 0.5 * (abs(r00) * sizeX + abs(r01) * sizeY + abs(r02) * sizeZ);
+                local wiseY = 0.5 * (abs(r10) * sizeX + abs(r11) * sizeY + abs(r12) * sizeZ);
+                local wiseZ = 0.5 * (abs(r20) * sizeX + abs(r21) * sizeY + abs(r22) * sizeZ);
+
+                minX = minX > x - wiseX and x - wiseX or minX;
+                minY = minY > y - wiseY and y - wiseY or minY;
+                minZ = minZ > z - wiseZ and z - wiseZ or minZ;
+
+                maxX = maxX < x + wiseX and x + wiseX or maxX;
+                maxY = maxY < y + wiseY and y + wiseY or maxY;
+                maxZ = maxZ < z + wiseZ and z + wiseZ or maxZ;
+            end
+        end
+
+        local oMin, oMax = vector3New(minX, minY, minZ), vector3New(maxX, maxY, maxZ);
+        return (oMax + oMin) * 0.5, oMax - oMin;
+    else
+        return torso.Position, vector2New(espLibrary.options.scaleFactorX, espLibrary.options.scaleFactorY);
+    end
+end
+
+function espLibrary.getScaleFactor(fov, depth)
+    if (fov ~= lastFov) then
+        lastScale = tan(rad(fov * 0.5)) * 2;
+        lastFov = fov;
+    end
+
+    return 1 / (depth * lastScale) * 1000;
+end
+
+function espLibrary.getBoxData(position, size)
+    local torsoPosition, onScreen, depth = worldToViewportPoint(position);
+    local scaleFactor = espLibrary.getScaleFactor(currentCamera.FieldOfView, depth);
+
+    local clampX = clamp(size.X, espLibrary.options.minScaleFactorX, espLibrary.options.maxScaleFactorX);
+    local clampY = clamp(size.Y, espLibrary.options.minScaleFactorY, espLibrary.options.maxScaleFactorY);
+    local size = round(vector2New(clampX * scaleFactor, clampY * scaleFactor));
+
+    return onScreen, size, round(vector2New(torsoPosition.X - (size.X * 0.5), torsoPosition.Y - (size.Y * 0.5))), torsoPosition;
+end
+
+function espLibrary.getHealth(player, character)
+    local humanoid = findFirstChild(character, "Humanoid");
+
+    if (humanoid) then
+        return humanoid.Health, humanoid.MaxHealth;
+    end
+
+    return 100, 100;
+end
+
+function espLibrary.visibleCheck(character, position)
+    local origin = currentCamera.CFrame.Position;
+    local params = raycastParamsNew();
+
+    params.FilterDescendantsInstances = { espLibrary.getCharacter(localPlayer), currentCamera, character };
+    params.FilterType = Enum.RaycastFilterType.Blacklist;
+    params.IgnoreWater = true;
+
+    return (not raycast(workspace, origin, position - origin, params));
+end
+
+function espLibrary.addEsp(player)
+    if (player == localPlayer) then
+        return
+    end
+
+    local objects = {
+        arrow = create("Triangle", {
+            Thickness = 1,
+        }),
+        arrowOutline = create("Triangle", {
+            Thickness = 1,
+        }),
+        top = create("Text", {
+            Center = true,
+            Size = 13,
+            Outline = true,
+            OutlineColor = color3New(),
+            Font = 2,
+        }),
+        side = create("Text", {
+            Size = 13,
+            Outline = true,
+            OutlineColor = color3New(),
+            Font = 2,
+        }),
+        bottom = create("Text", {
+            Center = true,
+            Size = 13,
+            Outline = true,
+            OutlineColor = color3New(),
+            Font = 2,
+        }),
+        boxFill = create("Square", {
+            Thickness = 1,
+            Filled = true,
+        }),
+        boxOutline = create("Square", {
+            Thickness = 3,
+            Color = color3New()
+        }),
+        box = create("Square", {
+            Thickness = 1
+        }),
+        healthBarOutline = create("Square", {
+            Thickness = 1,
+            Color = color3New(),
+            Filled = true
+        }),
+        healthBar = create("Square", {
+            Thickness = 1,
+            Filled = true
+        }),
+        line = create("Line")
+    };
+
+    espLibrary.espCache[player] = objects;
+end
+
+function espLibrary.removeEsp(player)
+    local espCache = espLibrary.espCache[player];
+
+    if (espCache) then
+        espLibrary.espCache[player] = nil;
+
+        for index, object in next, espCache do
+            espCache[index] = nil;
+            object:Remove();
+        end
+    end
+end
+
+function espLibrary.addChams(player)
+    if (player == localPlayer) then
+        return
+    end
+
+    espLibrary.chamsCache[player] = create("Highlight", {
+        Parent = screenGui,
+    });
+end
+
+function espLibrary.removeChams(player)
+    local highlight = espLibrary.chamsCache[player];
+
+    if (highlight) then
+        espLibrary.chamsCache[player] = nil;
+        highlight:Destroy();
+    end
+end
+
+function espLibrary.addObject(object, options)
+    espLibrary.objectCache[object] = {
+        options = options,
+        text = create("Text", {
+            Center = true,
+            Size = 13,
+            Outline = true,
+            OutlineColor = color3New(),
+            Font = 2,
+        })
+    };
+end
+
+function espLibrary.removeObject(object)
+    local cache = espLibrary.objectCache[object];
+
+    if (cache) then
+        espLibrary.objectCache[object] = nil;
+        cache.text:Remove();
+    end
+end
+
+function espLibrary:AddObjectEsp(object, defaultOptions)
+    assert(object and object.Parent, "invalid object passed");
+
+    local options = defaultOptions or {};
+
+    options.enabled = options.enabled or true;
+    options.limitDistance = options.limitDistance or false;
+    options.maxDistance = options.maxDistance or false;
+    options.visibleOnly = options.visibleOnly or false;
+    options.color = options.color or color3New(1, 1, 1);
+    options.transparency = options.transparency or 1;
+    options.text = options.text or object.Name;
+    options.font = options.font or 2;
+    options.fontSize = options.fontSize or 13;
+
+    self.addObject(object, options);
+
+    insert(self.conns, object.Parent.ChildRemoved:Connect(function(child)
+        if (child == object) then
+            self.removeObject(child);
+        end
+    end));
+
+    return options;
+end
+
+function espLibrary:Unload()
+    for _, connection in next, self.conns do
+        connection:Disconnect();
+    end
+
+    for _, player in next, players:GetPlayers() do
+        self.removeEsp(player);
+        self.removeChams(player);
+    end
+
+    for object, _ in next, self.objectCache do
+        self.removeObject(object);
+    end
+
+    for _, object in next, self.instances do
+        object:Destroy();
+    end
+
+    screenGui:Destroy();
+    runService:UnbindFromRenderStep("esp_rendering");
+end
+
+function espLibrary:Load(renderValue)
+    insert(self.conns, players.PlayerAdded:Connect(function(player)
+        self.addEsp(player);
+        self.addChams(player);
+    end));
+
+    insert(self.conns, players.PlayerRemoving:Connect(function(player)
+        self.removeEsp(player);
+        self.removeChams(player);
+    end));
+
+    for _, player in next, players:GetPlayers() do
+        self.addEsp(player);
+        self.addChams(player);
+    end
+
+    runService:BindToRenderStep("esp_rendering", renderValue or (Enum.RenderPriority.Camera.Value + 1), function()
+        for player, objects in next, self.espCache do
+            local character, torso = self.getCharacter(player);
+
+            if (character and torso) then
+                local onScreen, size, position, torsoPosition = self.getBoxData(torso.Position, Vector3.new(5, 6));
+                local distance = (currentCamera.CFrame.Position - torso.Position).Magnitude;
+                local canShow, enabled = onScreen and (size and position), self.options.enabled;
+                local team, teamColor = self.getTeam(player);
+                local color = self.options.teamColor and teamColor or nil;
+
+                if (self.options.fillColor ~= nil) then
+                    color = self.options.fillColor;
+                end
+
+                if (find(self.whitelist, player.Name)) then
+                    color = self.options.whitelistColor;
+                end
+
+                if (find(self.blacklist, player.Name)) then
+                    enabled = false;
+                end
+
+                if (self.options.limitDistance and distance > self.options.maxDistance) then
+                    enabled = false;
+                end
+
+                if (self.options.visibleOnly and not self.visibleCheck(character, torso.Position)) then
+                    enabled = false;
+                end
+
+                if (self.options.teamCheck and (team == self.getTeam(localPlayer))) then
+                    enabled = false;
+                end
+
+                local viewportSize = currentCamera.ViewportSize;
+
+                local screenCenter = vector2New(viewportSize.X / 2, viewportSize.Y / 2);
+                local objectSpacePoint = (pointToObjectSpace(currentCamera.CFrame, torso.Position) * vector3New(1, 0, 1)).Unit;
+                local crossVector = cross(objectSpacePoint, vector3New(0, 1, 1));
+                local rightVector = vector2New(crossVector.X, crossVector.Z);
+
+                local arrowRadius, arrowSize = self.options.outOfViewArrowsRadius, self.options.outOfViewArrowsSize;
+                local arrowPosition = screenCenter + vector2New(objectSpacePoint.X, objectSpacePoint.Z) * arrowRadius;
+                local arrowDirection = (arrowPosition - screenCenter).Unit;
+
+                local pointA, pointB, pointC = arrowPosition, screenCenter + arrowDirection * (arrowRadius - arrowSize) + rightVector * arrowSize, screenCenter + arrowDirection * (arrowRadius - arrowSize) + -rightVector * arrowSize;
+
+                local health, maxHealth = self.getHealth(player, character);
+                local healthBarSize = round(vector2New(self.options.healthBarsSize, -(size.Y * (health / maxHealth))));
+                local healthBarPosition = round(vector2New(position.X - (3 + healthBarSize.X), position.Y + size.Y));
+
+                local origin = self.options.tracerOrigin;
+                local show = canShow and enabled;
+
+                objects.arrow.Visible = (not canShow and enabled) and self.options.outOfViewArrows;
+                objects.arrow.Filled = self.options.outOfViewArrowsFilled;
+                objects.arrow.Transparency = self.options.outOfViewArrowsTransparency;
+                objects.arrow.Color = color or self.options.outOfViewArrowsColor;
+                objects.arrow.PointA = pointA;
+                objects.arrow.PointB = pointB;
+                objects.arrow.PointC = pointC;
+
+                objects.arrowOutline.Visible = (not canShow and enabled) and self.options.outOfViewArrowsOutline;
+                objects.arrowOutline.Filled = self.options.outOfViewArrowsOutlineFilled;
+                objects.arrowOutline.Transparency = self.options.outOfViewArrowsOutlineTransparency;
+                objects.arrowOutline.Color = color or self.options.outOfViewArrowsOutlineColor;
+                objects.arrowOutline.PointA = pointA;
+                objects.arrowOutline.PointB = pointB;
+                objects.arrowOutline.PointC = pointC;
+
+                objects.top.Visible = show and self.options.names;
+                objects.top.Font = self.options.font;
+                objects.top.Size = self.options.fontSize;
+                objects.top.Transparency = self.options.nameTransparency;
+                objects.top.Color = color or self.options.nameColor;
+                objects.top.Text = player.Name;
+                objects.top.Position = round(position + vector2New(size.X * 0.5, -(objects.top.TextBounds.Y + 2)));
+
+                objects.side.Visible = show and self.options.healthText;
+                objects.side.Font = self.options.font;
+                objects.side.Size = self.options.fontSize;
+                objects.side.Transparency = self.options.healthTextTransparency;
+                objects.side.Color = color or self.options.healthTextColor;
+                objects.side.Text = health .. self.options.healthTextSuffix;
+                objects.side.Position = round(position + vector2New(size.X + 3, -3));
+
+                objects.bottom.Visible = show and self.options.distance;
+                objects.bottom.Font = self.options.font;
+                objects.bottom.Size = self.options.fontSize;
+                objects.bottom.Transparency = self.options.distanceTransparency;
+                objects.bottom.Color = color or self.options.nameColor;
+                objects.bottom.Text = tostring(round(distance)) .. self.options.distanceSuffix;
+                objects.bottom.Position = round(position + vector2New(size.X * 0.5, size.Y + 1));
+
+                objects.box.Visible = show and self.options.boxes;
+                objects.box.Color = color or self.options.boxesColor;
+                objects.box.Transparency = self.options.boxesTransparency;
+                objects.box.Size = size;
+                objects.box.Position = position;
+
+                objects.boxOutline.Visible = show and self.options.boxes;
+                objects.boxOutline.Transparency = self.options.boxesTransparency;
+                objects.boxOutline.Size = size;
+                objects.boxOutline.Position = position;
+
+                objects.boxFill.Visible = show and self.options.boxFill;
+                objects.boxFill.Color = color or self.options.boxFillColor;
+                objects.boxFill.Transparency = self.options.boxFillTransparency;
+                objects.boxFill.Size = size;
+                objects.boxFill.Position = position;
+
+                objects.healthBar.Visible = show and self.options.healthBars;
+                objects.healthBar.Color = color or self.options.healthBarsColor;
+                objects.healthBar.Transparency = self.options.healthBarsTransparency;
+                objects.healthBar.Size = healthBarSize;
+                objects.healthBar.Position = healthBarPosition;
+
+                objects.healthBarOutline.Visible = show and self.options.healthBars;
+                objects.healthBarOutline.Transparency = self.options.healthBarsTransparency;
+                objects.healthBarOutline.Size = round(vector2New(healthBarSize.X, -size.Y) + vector2New(2, -2));
+                objects.healthBarOutline.Position = healthBarPosition - vector2New(1, -1);
+
+                objects.line.Visible = show and self.options.tracers;
+                objects.line.Color = color or self.options.tracerColor;
+                objects.line.Transparency = self.options.tracerTransparency;
+                objects.line.From =
+                    origin == "Mouse" and userInputService:GetMouseLocation() or
+                    origin == "Top" and vector2New(viewportSize.X * 0.5, 0) or
+                    origin == "Bottom" and vector2New(viewportSize.X * 0.5, viewportSize.Y);
+                objects.line.To = torsoPosition;
+            else
+                for _, object in next, objects do
+                    object.Visible = false;
+                end
+            end
+        end
+
+        for player, highlight in next, self.chamsCache do
+            local character, torso = self.getCharacter(player);
+
+            if (character and torso) then
+                local distance = (currentCamera.CFrame.Position - torso.Position).Magnitude;
+                local canShow = self.options.enabled and self.options.chams;
+                local team, teamColor = self.getTeam(player);
+                local color = self.options.teamColor and teamColor or nil;
+
+                if (self.options.fillColor ~= nil) then
+                    color = self.options.fillColor;
+                end
+
+                if (find(self.whitelist, player.Name)) then
+                    color = self.options.whitelistColor;
+                end
+
+                if (find(self.blacklist, player.Name)) then
+                    canShow = false;
+                end
+
+                if (self.options.limitDistance and distance > self.options.maxDistance) then
+                    canShow = false;
+                end
+
+                if (self.options.teamCheck and (team == self.getTeam(localPlayer))) then
+                    canShow = false;
+                end
+
+                highlight.Enabled = canShow;
+                highlight.DepthMode = self.options.visibleOnly and Enum.HighlightDepthMode.Occluded or Enum.HighlightDepthMode.AlwaysOnTop;
+                highlight.Adornee = character;
+                highlight.FillColor = color or self.options.chamsFillColor;
+                highlight.FillTransparency = self.options.chamsFillTransparency;
+                highlight.OutlineColor = color or self.options.chamsOutlineColor;
+                highlight.OutlineTransparency = self.options.chamsOutlineTransparency;
+            end
+        end
+
+        for object, cache in next, self.objectCache do
+            local partPosition = vector3New();
+
+            if (object:IsA("BasePart")) then
+                partPosition = object.Position;
+            elseif (object:IsA("Model")) then
+                partPosition = self.getBoundingBox(object);
+            end
+
+            local distance = (currentCamera.CFrame.Position - partPosition).Magnitude;
+            local screenPosition, onScreen = worldToViewportPoint(partPosition);
+            local canShow = cache.options.enabled and onScreen;
+
+            if (self.options.limitDistance and distance > self.options.maxDistance) then
+                canShow = false;
+            end
+
+            if (self.options.visibleOnly and not self.visibleCheck(object, partPosition)) then
+                canShow = false;
+            end
+
+            cache.text.Visible = canShow;
+            cache.text.Font = cache.options.font;
+            cache.text.Size = cache.options.fontSize;
+            cache.text.Transparency = cache.options.transparency;
+            cache.text.Color = cache.options.color;
+            cache.text.Text = cache.options.text;
+            cache.text.Position = round(screenPosition);
+        end
+    end);
+end
+
+return espLibrary;
